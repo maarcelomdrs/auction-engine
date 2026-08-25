@@ -1,3 +1,5 @@
+mod domain;
+
 fn main() {
-    println!("Hello, world!");
+    println!("Domínio de leilão carregado com sucesso!");
 }

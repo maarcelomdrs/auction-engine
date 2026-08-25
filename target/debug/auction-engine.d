@@ -1,0 +1,1 @@
+/home/marcelo/Dados/dev/auction-engine/target/debug/auction-engine: /home/marcelo/Dados/dev/auction-engine/src/domain/auction.rs /home/marcelo/Dados/dev/auction-engine/src/domain/bid.rs /home/marcelo/Dados/dev/auction-engine/src/domain/errors.rs /home/marcelo/Dados/dev/auction-engine/src/domain/mod.rs /home/marcelo/Dados/dev/auction-engine/src/main.rs
