@@ -1,4 +1,4 @@
-#[derive(Debug, Clone)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Bid {
     pub bidder_id: String,
     pub amount: f64,
@@ -7,8 +7,9 @@ pub struct Bid {
 impl Bid {
     pub fn new(bidder_id: String, amount: f64) -> Result<Self, &'static str> {
         if amount <= 0.0 {
-            return Err("O valor do lance deve ser maior que zero.");
+            return Err("O valor do lance deve ser positivo.");
         }
+
         Ok(Self { bidder_id, amount })
     }
 }

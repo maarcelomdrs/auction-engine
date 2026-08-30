@@ -2,38 +2,30 @@ use crate::domain::bid::Bid;
 use crate::domain::errors::DomainError;
 use crate::domain::repository::AuctionRepository;
 
-pub struct PlaceBidCommand {
+pub struct CloseAuctionCommand {
     pub auction_id: String,
-    pub bidder_id: String,
-    pub amount: f64,
+    pub requester_id: String,
 }
 
-pub fn execute_place_bid(
-    command: PlaceBidCommand,
+pub fn execute_close_auction(
+    command: CloseAuctionCommand,
     repository: &dyn AuctionRepository,
-) -> Result<(), DomainError> {
+) -> Result<Option<Bid>, DomainError> {
     const MAX_RETRIES: u32 = 3;
     let mut attempts = 0;
-
-    let bid = Bid::new(command.bidder_id.clone(), command.amount)
-        .map_err(|_| DomainError::BidTooLow { minimum: 0.0, provided: command.amount })?;
 
     loop {
         attempts += 1;
 
-        // 1. Recarrega o estado atualizado do banco
         let mut auction = repository
             .find_by_id(&command.auction_id)
             .ok_or(DomainError::AuctionNotFound)?;
 
-        // 2. Aplica as regras de negócio
-        auction.place_bid(bid.clone())?;
+        let winner = auction.close(&command.requester_id)?;
 
-        // 3. Tenta persistir com OCC
         match repository.save(auction) {
-            Ok(_) => return Ok(()),
+            Ok(_) => return Ok(winner),
             Err(DomainError::OptimisticLockError) if attempts < MAX_RETRIES => {
-                // Conflito detectado: tenta novamente na próxima iteração recarregando os dados
                 continue;
             }
             Err(e) => return Err(e),
